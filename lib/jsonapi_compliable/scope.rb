@@ -96,10 +96,8 @@ module JsonapiCompliable
         else
           namespace = Util::Sideload.namespace(@namespace, sideload.name)
           resolve_sideload = -> {
-            begin
+            ActiveRecord::Base.connection_pool.with_connection do
               sideload.resolve(results, @query, namespace)
-            ensure
-              ActiveRecord::Base.clear_active_connections! if defined?(ActiveRecord)
             end
           }
           if concurrent
